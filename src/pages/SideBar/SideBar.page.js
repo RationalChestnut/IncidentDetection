@@ -1,3 +1,5 @@
+// SideBar.jsx
+
 import React from "react";
 import styles from "./SideBar.module.css";
 import { FaMapPin } from "react-icons/fa6";
@@ -123,20 +125,37 @@ export const SideBar = () => (
           </div>
           <div className={styles.location}>
             <FaMapPin />
-            {acc.location}
+            <span style={{ marginLeft: 4 }}>{acc.location}</span>
           </div>
           <p className={styles.description}>{acc.description}</p>
+
           <p className={styles.logs}>Logs:</p>
           <div className={styles.terminalContainer}>
-            {acc.logs.map((log, index) => (
-              <div key={index} className={styles.terminalLine}>
-                <span className={styles.terminalPrompt}>
-                  {log.type === "command" ? "$" : ">"}
-                </span>
-                <span className={styles.terminalCommand}>{log.source}:</span>
-                <span className={styles.terminalOutput}>{log.message}</span>
-              </div>
-            ))}
+            {acc.logs.map((log, idx) => {
+              const msg = log.message;
+              const charCount = msg.length;
+              const duration = (charCount * 0.05).toFixed(2) + "s";
+              const delay = (idx * 0.3).toFixed(2) + "s";
+
+              return (
+                <div key={idx} className={styles.terminalLine}>
+                  <span className={styles.terminalPrompt}>
+                    {log.type === "command" ? "$" : ">"}
+                  </span>
+                  <span className={styles.terminalCommand}>{log.source}:</span>
+                  <span
+                    className={`${styles.terminalOutput} ${styles.typing}`}
+                    style={{
+                      "--typing-duration": duration,
+                      "--char-count": charCount,
+                      animationDelay: delay,
+                    }}
+                  >
+                    {msg}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}
