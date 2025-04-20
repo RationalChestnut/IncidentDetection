@@ -11,6 +11,7 @@ export const Stream = ({ onAnalyze, accidents }) => {
 
   const socketsRef = useRef({});
   const timesRef = useRef({});
+  const prevAccidentKeys = useRef([]);
 
   // 1) fetch streams once
   useEffect(() => {
@@ -33,6 +34,7 @@ export const Stream = ({ onAnalyze, accidents }) => {
       );
       ws.addEventListener("message", ({ data }) => {
         const payload = JSON.parse(data);
+        console.log(payload);
         if (payload.type !== "frame") return;
 
         const { stream_id, frame } = payload;
@@ -65,9 +67,8 @@ export const Stream = ({ onAnalyze, accidents }) => {
       as.addEventListener("message", ({ data }) => {
         const payload = JSON.parse(data);
         if (payload.type === "accident_alert") {
-          let prompt = `You are a caller informing 911 operator about the following accident. You must be brief concise, and get all information across:You have access to the following information:${payload.description}`;
+          let prompt = `You are a caller informing 911 operator about the following accident. You must be brief, concise, and get all information across: You have access to the following information: ${payload.description}`;
 
-          // Add the emergency services log message right before the call
           onAnalyze({
             ...payload,
             logs: [
@@ -89,13 +90,14 @@ export const Stream = ({ onAnalyze, accidents }) => {
     });
   }, [streamsList, onAnalyze]);
 
-  // 3) trigger glow when accidents array changes
+  // 3) trigger glow only for newly added accidents
   useEffect(() => {
-    accidents.forEach((acc) => {
-      const id = acc.key;
-      // start glow
+    const prevKeys = prevAccidentKeys.current;
+    const currentKeys = accidents.map((acc) => acc.key);
+
+    const newKeys = currentKeys.filter((key) => !prevKeys.includes(key));
+    newKeys.forEach((id) => {
       setGlowingStreams((prev) => ({ ...prev, [id]: true }));
-      // stop glow after 2s
       setTimeout(() => {
         setGlowingStreams((prev) => {
           const next = { ...prev };
@@ -104,9 +106,11 @@ export const Stream = ({ onAnalyze, accidents }) => {
         });
       }, 2000);
     });
+
+    prevAccidentKeys.current = currentKeys;
   }, [accidents]);
 
-  // 4) cleanup all sockets on unmount only
+  // 4) cleanup all sockets on unmount
   useEffect(() => {
     return () => {
       Object.values(socketsRef.current).forEach(({ ws, as }) => {

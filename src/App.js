@@ -48,7 +48,6 @@ function App() {
         })
         .toLowerCase()
         .replace(/\s/g, ""),
-
       location: payload.location,
       description: payload.description,
       key: payload.stream_id,
@@ -63,9 +62,35 @@ function App() {
           source: "cnfrm",
           message: `Accident detected at ${payload.timestamp} on ${payload.location}`,
         },
+        {
+          type: "output",
+          source: "action",
+          message: "Dialing local emergency services...",
+        },
       ],
     };
     setAccidents((prev) => [obj, ...prev]);
+
+    // After 20 seconds, append "Call completed, help on the way" to the logs
+    setTimeout(() => {
+      setAccidents((prevAccidents) =>
+        prevAccidents.map((acc) =>
+          acc.key === payload.stream_id
+            ? {
+                ...acc,
+                logs: [
+                  ...acc.logs,
+                  {
+                    type: "output",
+                    source: "action",
+                    message: "Call completed, help on the way",
+                  },
+                ],
+              }
+            : acc
+        )
+      );
+    }, 20000);
   };
 
   return (
