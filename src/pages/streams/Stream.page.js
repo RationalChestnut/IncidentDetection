@@ -127,7 +127,7 @@ export const Stream = ({ onAnalyze, accidents }) => {
 
   return (
     <div className={styles.streamContainer}>
-      {streamsList.map(({ id, location }) => (
+      {streamsList.map(({ id, location }, index) => (
         <div
           key={id}
           className={`${styles.stream} ${
@@ -135,7 +135,7 @@ export const Stream = ({ onAnalyze, accidents }) => {
           }`}
         >
           <div className={styles.videoWrapper}>
-            {currentFrames[id] ? (
+            {/* {currentFrames[id] ? (
               <img
                 src={currentFrames[id]}
                 alt={`Live stream ${id}`}
@@ -149,11 +149,23 @@ export const Stream = ({ onAnalyze, accidents }) => {
               />
             ) : (
               <div className={styles.placeholder}>Loading frame…</div>
-            )}
+            )} */}
+            <video
+              className={styles.videoElement}
+              autoPlay
+              muted
+              playsInline
+              loop
+              src={
+                index === 1
+                  ? require("../../assets/crash2.mp4")
+                  : require("../../assets/crash1.mp4")
+              }
+            ></video>
             <div className={styles.gradientOverlay} />
-            <div className={styles.fps}>
+            {/* <div className={styles.fps}>
               {fps[id] != null ? fps[id] : "--"} FPS
-            </div>
+            </div> */}
             <h3 className={styles.label}>{location}</h3>
           </div>
         </div>

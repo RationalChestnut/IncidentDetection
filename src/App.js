@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -40,14 +40,16 @@ function App() {
   const handleAnalyze = (payload) => {
     const obj = {
       title: "Accident on " + payload.stream_id,
-      time: new Date(payload.timestamp)
-        .toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        })
-        .toLowerCase()
-        .replace(/\s/g, ""),
+      time:
+        payload.time ??
+        new Date(payload.timestamp)
+          .toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          })
+          .toLowerCase()
+          .replace(/\s/g, ""),
       location: payload.location,
       description: payload.description,
       key: payload.stream_id,
@@ -92,6 +94,23 @@ function App() {
       );
     }, 20000);
   };
+
+  useEffect(() => {
+    // first fake accident after 5s
+    const t1 = setTimeout(() => {
+      handleAnalyze({
+        stream_id: "Clip 4",
+        timestamp: new Date().toISOString(),
+        time: "1:32pm",
+        location: "MN Hwy 55 at Hwy 100",
+        description: "Car drives out on grass and hits car",
+      });
+    }, 11000);
+
+    return () => {
+      clearTimeout(t1);
+    };
+  }, []);
 
   return (
     <Router>
