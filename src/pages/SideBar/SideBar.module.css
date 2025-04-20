@@ -2,6 +2,8 @@
   width: 500px;
   border-left: 1px solid rgba(256, 256, 256, 0.2);
   padding: 16px;
+  height: calc(100% - 75px);
+  overflow-y: auto;
 }
 
 .title {
@@ -16,6 +18,9 @@
 }
 
 .accidentTitle {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin: 0px;
 }
 
@@ -111,4 +116,11 @@
 
 .important {
   font-weight: 600;
+}
+
+.noAccidents {
+  padding: 16px;
+  color: #ccc;
+  text-align: center;
+  font-style: italic;
 }

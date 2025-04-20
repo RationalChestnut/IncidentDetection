@@ -1,7 +1,12 @@
-import { NavLink } from "react-router-dom";
+// src/App.js
+import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  NavLink,
+} from "react-router-dom";
 import styles from "./App.module.css";
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Home } from "./pages/Home/Home.page";
 import { Stream } from "./pages/streams/Stream.page";
 import { SideBar } from "./pages/SideBar/SideBar.page";
@@ -14,9 +19,8 @@ export const NavBar = () => (
         `${styles.link} ${isActive ? styles.active : ""}`
       }
     >
-      <h1 className={styles.navTitle}>AccidentAI</h1>
+      <h1 className={styles.navTitle}>AutoResQ</h1>
     </NavLink>
-
     <div className={styles.links}>
       <NavLink
         to="/detect"
@@ -31,24 +35,55 @@ export const NavBar = () => (
 );
 
 function App() {
+  const [accidents, setAccidents] = useState([]);
+
+  const handleAnalyze = (payload) => {
+    const obj = {
+      title: "Accident on " + payload.stream_id,
+      time: new Date(payload.timestamp)
+        .toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "2-digit",
+          hour12: true,
+        })
+        .toLowerCase()
+        .replace(/\s/g, ""),
+
+      location: payload.location,
+      description: payload.description,
+      key: payload.stream_id,
+      logs: [
+        {
+          type: "command",
+          source: "detect",
+          message: `Detecting accident on stream ${payload.stream_id}...`,
+        },
+        {
+          type: "output",
+          source: "cnfrm",
+          message: `Accident detected at ${payload.timestamp} on ${payload.location}`,
+        },
+      ],
+    };
+    setAccidents((prev) => [obj, ...prev]);
+  };
+
   return (
     <Router>
-      <div className={styles.app}>
-        <NavBar />
-        <div className={styles.container}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route
-              path="/detect"
-              element={
-                <>
-                  <Stream />
-                  <SideBar />
-                </>
-              }
-            />
-          </Routes>
-        </div>
+      <NavBar />
+      <div className={styles.container}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route
+            path="/detect"
+            element={
+              <>
+                <Stream onAnalyze={handleAnalyze} accidents={accidents} />
+                <SideBar accidents={accidents} />
+              </>
+            }
+          />
+        </Routes>
       </div>
     </Router>
   );

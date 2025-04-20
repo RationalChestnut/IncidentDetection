@@ -71,3 +71,31 @@
   font-size: 0.85rem;
   max-width: 90%;
 }
+
+.fps {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: white;
+  z-index: 2;
+}
+@keyframes glowFade {
+  0% {
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+  }
+  50% {
+    /* increased glow radius and spread */
+    box-shadow: 0 0 20px 12px rgba(255, 0, 0, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 0px rgba(255, 0, 0, 0);
+  }
+}
+
+.glow {
+  animation: glowFade 2s ease-out;
+}

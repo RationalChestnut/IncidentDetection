@@ -54,7 +54,7 @@ export const Home = () => {
       />
 
       <div className={styles.content}>
-        <h1 className={styles.title}>AccidentAI</h1>
+        <h1 className={styles.title}>AutoResQ</h1>
         <p className={styles.description}>Detect accidents in real-time.</p>
         <NavLink to="/detect" className={styles.beginButton}>
           Begin
